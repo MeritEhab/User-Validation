@@ -1,6 +1,8 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from rest_framework import generics
 
-from django.shortcuts import render
+from accounts.models import Accounts
+from accounts.serializers import AccountSerializer
 
-# Create your views here.
+class AccountCreateView(generics.CreateAPIView):
+    model = Accounts
+    serializer_class = AccountSerializer

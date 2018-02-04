@@ -16,3 +16,7 @@ class Accounts(AbstractUser):
     phone_number = PhoneNumberField(null=False, blank=False)
     gender = models.CharField(max_length=1, choices=gender_options, null=False, blank=False)
     avatar = models.ImageField(verbose_name=("Avatar"), null=False, blank=False)
+    birth_date = models.DateField(auto_now=False, auto_now_add=False)
+
+    def __unicode__(self):
+        return self.first_name + ' ' + self.last_name
