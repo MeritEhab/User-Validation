@@ -18,8 +18,17 @@ class AccountSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
-        
+
     class Meta:
         model = Accounts
         fields = ('first_name', 'last_name', 'password', 'country_code',
          'phone_number', 'gender', 'birth_date', 'avatar', 'email')
+
+
+class LoginSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(style={'input_type': 'password'})
+    phone_number = PhoneNumberField(required=True)
+
+    class Meta:
+        model = Accounts
+        fields = ('phone_number', 'password')
