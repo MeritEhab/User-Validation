@@ -23,13 +23,20 @@ class AccountCreateView(generics.CreateAPIView):
 class LoginView(APIView):
     model = Account
     serializer_class = LoginSerializer
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
+            user = Account.objects.get(phone_number=str(serializer.data["phone_number"]))
+            user.set_password(serializer.data["password"])
+            user.save()
+            try:
+                token = Token.objects.get(user=user)
+            except Token.DoesNotExist:
+                token = Token.objects.create(user=user)
             user = authenticate(phone_number=str(serializer.data["phone_number"]), password=serializer.data["password"])
             login(request, user)
-            token = Token.objects.get(user=user)
             return Response(data={'token': token.key}, status=status.HTTP_200_OK)
         else:
             return Response(data={'errors': serializer.errors},

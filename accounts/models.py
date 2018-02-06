@@ -1,15 +1,11 @@
 from __future__ import unicode_literals
 
-from django.conf import settings
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 from phonenumber_field.modelfields import PhoneNumberField
-from rest_framework.authtoken.models import Token
 
 
 class AccountManager(BaseUserManager):
@@ -17,7 +13,7 @@ class AccountManager(BaseUserManager):
 
     def _create_user(self, phone_number, birth_date, password, is_staff, is_superuser, **extra_fields):
         """
-        Creates and saves a User with the given phone_number and password.
+        Creates and saves a User with the given phone_number birth date, and password.
         """
         if not phone_number:
             raise ValueError('The given phone number must be set')
@@ -66,12 +62,9 @@ class Account(AbstractBaseUser, PermissionsMixin):
         return str(self.phone_number)
 
 
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
-
-
 class Status(models.Model):
     status = models.CharField(max_length=255, null=False, blank=False)
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
+
+    def __unicode__(self):
+        return str(self.user) + ' ' + self.status
